@@ -13,7 +13,7 @@
 
     (putprop 'escena nil 'figures)
 )
-; create 3d figure with color and inicia patrons
+
 (defun crea-figura(nom patro color)
     (putprop nom patro 'patro)
     (putprop nom color 'color)
@@ -21,15 +21,36 @@
     (putprop 'escena (cons nom (get 'escena 'figura)) 'figura)
 )
 
-
-
 ;sera una copia de pintar-figura pero con color = background color
 (defun cls-figura (f)
-
+    (color 0 0 0)
+    (pintacares (get (get f 'patro) 'cares) f)
 )
 
 (defun pinta-figura(f)
+    (eval (cons 'color (get f 'color)))
+    (pintacares (get (get f 'patro) 'cares) f)
+)
 
+(defun pintacares(cares f)
+    (cond ((null cares) nil)
+            (t (pintaarestes (car cares) f) (pintacares (cdr cares) f)))
+)
+
+
+
+(defun pintaarestes(cara f)
+    (cond ((null cara) nil)
+            (t (pintaaresta (agafa (car cara) (get (get f 'patro) 'arestes)) f) (pintaarestes (cdr cara) f))
+    )
+)
+
+(defun pintaaresta (aresta f)
+    (move (+ 320 (car (mult (snoc 1 (agafa (car aresta) (get (get f 'patro) 'punts)) (get f 'matriu)))))
+            (+ 187 (cadr (mult (snoc 1 (agafa (car aresta) (get (get f 'patro) 'punts)) (get f 'matriu))))))
+    (draw (+ 320 (car (mult (snoc 1 (agafa (cadr aresta (get (get f 'patro) 'punts)) (get f 'matriu))))))
+            (+ 187 (cadr (mult (snoc 1 (agafa (cadr aresta (get (get f 'patro) 'punts)) (get f 'matriu))))))
+    )
 )
 
 (defun borra-figura (f)
@@ -39,11 +60,13 @@
 
 ;defun paint each element of a list
 (defun pinta-figures ()
-    (if (null (get 'escena 'figura))
-        nil
-        (pinta-figura (car (get 'escena 'figura)))
-        (pinta-figures (cdr (get 'escena 'figura)))
-    )
+    (pinta-figures-recursive (get 'escena 'figura))
+)
+
+(defun pinta-figures-recursive (l)
+    (cond ((null l) nil)
+            ((null (cdr l)) (pinta-figura (car l)))
+            (t (pinta-figura (car l)) (pinta-figures-recursive (cdr l))))
 )
 
 (defun borra-figures()
@@ -63,5 +86,69 @@
 (defun identitat()
     '((1 0 0 0) (0 1 0 0) (0 0 1 0) (0 0 0 1))
 )
+
+(defun snoc(x l)
+    (cond   ((null l) (cons x l))
+            (t (cons (car l) (snoc x (cdr l))))
+    )
+)
+
+; coge el enesimo elemento de la lista
+(defun agafa (n list)
+    (cond ((null list) nil)
+            ((= n 0) (car list))
+            (t (agafa (- n 1) (cdr list))))
+)
+
+;FIXEAR MULT (NO SABEM A QUIN NIVELL PETA)
+(defun mult(m1 m2)
+    (multMatrix m1 (transpose m2))
+)
+
+(defun multMatrix(m1 m2)
+    (cond ((null m1) nil)
+        (t (cons (multVecMatrix (car m1) m2) (multMatrix (cdr m1) m2)))
+)
+)
+
+(defun multVecMatrix(v m)
+    (cond ((null m) nil)
+        (t (cons (pescalar v (car m)) (multVecMatrix v (cdr m)))))
+
+)
+
+
+;scalar product of two vectors
+(defun pescalar(v1 v2)
+    (cond ((null v1) 0)
+        (t (+ (* (car v1) (car v2))))
+        (pescalar (cdr v1) (cdr v2))
+    )
+)
+
+(defun escala(x l)
+    (cond   ((null l) nil)
+            (t (cons (* x (car l)) (escala x (cdr l))))
+    )
+)
+
+(defun cars (m)
+(if (null m)
+    nil
+    (cons (car (car m)) (cars (cdr m)))))
+
+(defun cdrs (m)
+(if (null m)
+    nil
+    (cons (cdr (car m)) (cdrs (cdr m)))))
+
+(defun transpose (m)
+(cond ((null m) nil)
+    ((null (car m)) nil)
+    (t (cons (cars m) (transpose (cdrs m))))))
+
+
+
+
 
 (inicia-patrons)
