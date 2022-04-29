@@ -31,7 +31,12 @@
 (defun pinta-figura(f)
     (eval (cons 'color (get f 'color)))
     (pinta-cares (get (get f 'patro) 'cares) f)
+    (color 0 0 0)
 )
+
+;; (defun translacio(dx dy dz)
+;;     (putprop ')
+;; )
 
 (defun pinta-cares(cares f)
     (cond ((null cares) nil)
@@ -47,14 +52,12 @@
 )
 
 (defun pinta-aresta (aresta f)
-   (print (list (+ 320 (realpart (round (car (multVecMatrix (snoc 1 (agafa (car aresta) (get (get f 'patro) 'punts))) (get f 'matriu))))))
-        (+ 187 (realpart (round (cadr (multVecMatrix (snoc 1 (agafa (car aresta) (get (get f 'patro) 'punts))) (get f 'matriu))))))))
+   (move (+ 320 (realpart (round (car (multVecMatrix (snoc 1 (agafa (car aresta) (get (get f 'patro) 'punts))) (get f 'matriu))))))
+        (+ 187 (realpart (round (cadr (multVecMatrix (snoc 1 (agafa (car aresta) (get (get f 'patro) 'punts))) (get f 'matriu)))))))
         
-    (print (list (+ 320 (realpart (round (car (multVecMatrix (snoc 1 (agafa (cadr aresta) (get (get f 'patro) 'punts))) (get f 'matriu))))))
+    (draw (+ 320 (realpart (round (car (multVecMatrix (snoc 1 (agafa (cadr aresta) (get (get f 'patro) 'punts))) (get f 'matriu))))))
             (+ 187 (realpart (round (cadr (multVecMatrix (snoc 1 (agafa (cadr aresta) (get (get f 'patro) 'punts))) (get f 'matriu))))))
-    ))
-    (print (get 'vars 'comptador))
-    (putprop 'vars (+ 1 (get 'vars 'comptador)) 'comptador)
+    )
 )
 
 (defun borra-figura (f)
@@ -104,7 +107,6 @@
             (t (agafa (- n 1) (cdr list))))
 )
 
-;FIXEAR MULT (NO SABEM A QUIN NIVELL PETA)
 (defun mult(m1 m2)  
     (multMatrix m1 (transpose m2))
 )
