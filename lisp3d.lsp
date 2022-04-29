@@ -34,9 +34,47 @@
     (color 0 0 0)
 )
 
-;; (defun translacio(dx dy dz)
-;;     (putprop ')
-;; )
+(defun translacio(dx dy dz)
+    '((1 0 0 0) (0 1 0 0) (0 0 1 0) (dx dy dz 1))
+)
+
+(defun escalat(ex ey ez)
+(print 1)
+    (list (list ex 0 0 0) (list 0 ey 0 0) (list 0 0 ez 0) (list 0 0 0 1))
+)
+
+(defun rotax(a)
+    (list (list 1 0 0 0) (list 0 (cos (radians a)) (- 0 (sin (radians a))) 0) (list 0 (sin (radians a)) (cos (radians a)) 0) (list 0 0 0 1))
+)
+
+(defun rotay(a)
+    (list (list (cos (radians a)) 0 (- 0 (sin (radians a))) 0) (list 0 1 0 0) (list (sin (radians a)) 0 (cos (radians a)) 0) (list 0 0 0 1))
+)
+
+(defun rotaz(a)
+    (list (list (cos (radians a)) (- 0 (sin (radians a))) 0 0) (list (sin (radians a)) (cos (radians a)) 0 0) (list 0 0 1 0) (list 0 0 0 1))
+)
+
+(defun trasllada-figura(f x y z)
+    (putprop f (multMatrix (get f 'matriu) (translacio x y z)) 'matriu)
+)
+
+(defun rota-figura(f x y z)
+    (putprop f (multMatrix (multMatrix (multMatrix (get f 'matriu) (rotax x)) (rotay y)) (rotaz z)) 'matriu)
+)
+
+(defun escala-figura (f x y z)
+    (putprop f (multMatrix (get f 'matriu) (escalat x y z)) 'matriu)
+)
+
+(defun inicia-figura(f)
+    (putprop f (identitat) 'matriu)
+)
+;convert from degrees to radians
+(defun radians(a)
+    (* a (/ pi 180))
+)
+
 
 (defun pinta-cares(cares f)
     (cond ((null cares) nil)
@@ -67,6 +105,7 @@
 
 ;defun paint each element of a list
 (defun pinta-figures ()
+    (cls)
     (pinta-figures-recursive (get 'escena 'figura))
 )
 
@@ -152,8 +191,22 @@
         ((null (car matrix)) nil)
         (t (cons (cars matrix) (transpose (cdrs matrix))))))
 
+(defun animacio (f)
+    (setq key (get-key))
+    (cond ((equal key 114) (anima-rotacio f))
+          ((equal key 116) (anima-translacio f))
+          ((equal key 101) (anima-escalat f))
+          ((equal key 113) ())     
+))
 
-
-
+(defun anima-rotacio (f)
+(print 'r)
+)
+(defun anima-translacio (f)
+(print 't)
+)
+(defun anima-escalat (f)
+(print 'e)
+)
 
 (inicia-patrons)
