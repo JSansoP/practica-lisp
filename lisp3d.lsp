@@ -12,6 +12,7 @@
     (putprop 'prisma '((3 4 6 9) (1 4 5 7) (2 5 6 8) (3 4 6 9) (7 8 9)) 'cares)
 
     (putprop 'escena nil 'figures)
+    (putprop 'vars 1 'comptador)  
 )
 
 (defun crea-figura(nom patro color)
@@ -21,36 +22,39 @@
     (putprop 'escena (cons nom (get 'escena 'figura)) 'figura)
 )
 
-;sera una copia de pintar-figura pero con color = background color
+;sera una copia de pintar-figura pero con color = background color  
 (defun cls-figura (f)
     (color 0 0 0)
-    (pintacares (get (get f 'patro) 'cares) f)
+    (pinta-cares (get (get f 'patro) 'cares) f)
 )
 
 (defun pinta-figura(f)
     (eval (cons 'color (get f 'color)))
-    (pintacares (get (get f 'patro) 'cares) f)
+    (pinta-cares (get (get f 'patro) 'cares) f)
 )
 
-(defun pintacares(cares f)
+(defun pinta-cares(cares f)
     (cond ((null cares) nil)
-            (t (pintaarestes (car cares) f) (pintacares (cdr cares) f)))
+            (t (pinta-arestes (car cares) f) (pinta-cares (cdr cares) f)))
 )
 
 
 
-(defun pintaarestes(cara f)
+(defun pinta-arestes(cara f)
     (cond ((null cara) nil)
-            (t (pintaaresta (agafa (car cara) (get (get f 'patro) 'arestes)) f) (pintaarestes (cdr cara) f))
+            (t (pinta-aresta (agafa (car cara) (get (get f 'patro) 'arestes)) f) (pinta-arestes (cdr cara) f))
     )
 )
 
-(defun pintaaresta (aresta f)
-    (move (+ 320 (car (mult (snoc 1 (agafa (car aresta) (get (get f 'patro) 'punts)) (get f 'matriu)))))
-            (+ 187 (cadr (mult (snoc 1 (agafa (car aresta) (get (get f 'patro) 'punts)) (get f 'matriu))))))
-    (draw (+ 320 (car (mult (snoc 1 (agafa (cadr aresta (get (get f 'patro) 'punts)) (get f 'matriu))))))
-            (+ 187 (cadr (mult (snoc 1 (agafa (cadr aresta (get (get f 'patro) 'punts)) (get f 'matriu))))))
-    )
+(defun pinta-aresta (aresta f)
+   (print (list (+ 320 (realpart (round (car (multVecMatrix (snoc 1 (agafa (car aresta) (get (get f 'patro) 'punts))) (get f 'matriu))))))
+        (+ 187 (realpart (round (cadr (multVecMatrix (snoc 1 (agafa (car aresta) (get (get f 'patro) 'punts))) (get f 'matriu))))))))
+        
+    (print (list (+ 320 (realpart (round (car (multVecMatrix (snoc 1 (agafa (cadr aresta) (get (get f 'patro) 'punts))) (get f 'matriu))))))
+            (+ 187 (realpart (round (cadr (multVecMatrix (snoc 1 (agafa (cadr aresta) (get (get f 'patro) 'punts))) (get f 'matriu))))))
+    ))
+    (print (get 'vars 'comptador))
+    (putprop 'vars (+ 1 (get 'vars 'comptador)) 'comptador)
 )
 
 (defun borra-figura (f)
@@ -96,12 +100,12 @@
 ; coge el enesimo elemento de la lista
 (defun agafa (n list)
     (cond ((null list) nil)
-            ((= n 0) (car list))
+            ((= n 1) (car list))
             (t (agafa (- n 1) (cdr list))))
 )
 
 ;FIXEAR MULT (NO SABEM A QUIN NIVELL PETA)
-(defun mult(m1 m2)
+(defun mult(m1 m2)  
     (multMatrix m1 (transpose m2))
 )
 
@@ -114,16 +118,13 @@
 (defun multVecMatrix(v m)
     (cond ((null m) nil)
         (t (cons (pescalar v (car m)) (multVecMatrix v (cdr m)))))
-
 )
 
 
 ;scalar product of two vectors
-(defun pescalar(v1 v2)
-    (cond ((null v1) 0)
-        (t (+ (* (car v1) (car v2))))
-        (pescalar (cdr v1) (cdr v2))
-    )
+(defun pescalar (v1 v2)
+    (cond ((null v1) 0) 
+    (t (+ (* (car v1) (car v2)) (pescalar (cdr v1) (cdr v2))))) 
 )
 
 (defun escala(x l)
@@ -132,20 +133,22 @@
     )
 )
 
-(defun cars (m)
-(if (null m)
-    nil
-    (cons (car (car m)) (cars (cdr m)))))
+(defun cars (matrix)
+    (if (null matrix)
+        nil
+        (cons (car (car matrix)) (cars (cdr matrix))))
+        )
 
-(defun cdrs (m)
-(if (null m)
-    nil
-    (cons (cdr (car m)) (cdrs (cdr m)))))
+(defun cdrs (matrix)
+    (if (null matrix)
+        nil
+        (cons (cdr (car matrix)) (cdrs (cdr matrix))))
+        )
 
-(defun transpose (m)
-(cond ((null m) nil)
-    ((null (car m)) nil)
-    (t (cons (cars m) (transpose (cdrs m))))))
+(defun transpose (matrix)
+    (cond ((null matrix) nil)
+        ((null (car matrix)) nil)
+        (t (cons (cars matrix) (transpose (cdrs matrix))))))
 
 
 
