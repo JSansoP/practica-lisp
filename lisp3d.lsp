@@ -1,3 +1,23 @@
+; Práctica 1 -  Llenguatges de Programació (2721)
+
+; Alumnes: 
+;   - Joan Sansó Pericás
+;   - Joan Vilella Candia
+;   - Julián Wallis Medina
+
+; Professors:
+;   - Dr. Ramon Mas
+;   - Dra. Xisca Roig
+
+; Hem duit a terme la primera pràctica de l'assignatura, que consisteix en 
+; programar un entorn de dibuix de figures 3D.
+; Hem implementat la part 1 i la part 2. A més hem afegit dues figures extra,
+; La pirámide i un diamant. Totes les figures han estat calculades pels membres
+; de l'equip.
+; A la funció de animar la rotació hem afegit una rotació sobre l'eix z a més
+; de les demanades per la pràctica, per rotar sobre l'eix z, s'empreran les
+; tecles w i s.
+
 (defun inicia-patrons()
     (putprop 'cub '((-0.5 -0.5 0.5) (-0.5 -0.5 -0.5) (0.5 -0.5 -0.5) (0.5 -0.5 0.5) (-0.5 0.5 0.5) (-0.5 0.5 -0.5) (0.5 0.5 -0.5) (0.5 0.5 0.5)) 'punts)
     (putprop 'cub '((1 2) (2 3) (3 4) (1 4) (5 6) (6 7) (7 8) (5 8) (1 5) (2 6) (3 7) (4 8)) 'arestes)
@@ -10,6 +30,14 @@
     (putprop 'prisma '((0 -1 0) (0 -1 -1) (1 -1 0) (0 1 0) (0 1 -1) (1 1 0)) 'punts)
     (putprop 'prisma '((1 2) (2 3) (1 3) (1 4) (2 5) (3 6) (4 5) (5 6) (4 6)) 'arestes)
     (putprop 'prisma '((3 4 6 9) (1 4 5 7) (2 5 6 8) (3 4 6 9) (7 8 9)) 'cares)
+
+    (putprop 'piramide '((0 1 0) (-0.5 0 0.5) (-0.5 0 -0.5) (0.5 0 -0.5) (0.5 0 0.5)) 'punts)
+    (putprop 'piramide '((1 2) (1 3) (1 4) (1 5) (2 3) (2 5) (4 5) (4 3)) 'arestes)
+    (putprop 'piramide '((1 4 8) (1 2 5) (2 3 6) (3 4 7) (2 3 4 5)) 'cares)    ;inicialitzam figures
+
+    (putprop 'diamant '((0 0 0) (1 1 0) (0.5 1 0.86602) (-0.5 1 0.86602) (-1 1 0) (-0.5 1 -0.86602) (0.5 1 -0.86602) (0.75 1.25 0) (0.375 1.25 0.649519) (-0.375 1.25 0.649519) (-0.75 1.25 0) (-0.375 1.25 -0.649519) (0.375 1.25 -0.649519)(anima-rotacio f) ) 'punts)
+    (putprop 'diamant '((1 2) (1 3) (1 4) (1 5) (1 6) (1 7) (2 3) (3 4) (4 5) (5 6) (6 7) (7 2) (2 8) (3 9) (4 10) (5 11) (6 12) (7 13) (8 9) (9 10) (10 11) (11 12) (12 13) (13 8)) 'arestes)
+    (putprop 'diamant '((1 2 7) (2 3 8) (3 4 9) (4 5 10) (5 6 11) (1 6 12) (13 7 14 19) (14 20 15 8) (9 15 16 21) (10 16 17 22) (11 17 18 23)  (13 18 12 24) (19 20 21 22 23 24)) 'cares)    ;inicialitzam figures
 
     (putprop 'escena nil 'figures)
     (putprop 'vars 1 'comptador)  
@@ -209,10 +237,12 @@
     (print 'rotacio)
     (setq key (get-key))
     (cond 
-        ((equal key 331) (rota-figura f 0 -5 0) (cls f) (pinta-figura f) (anima-rotacio f))
-        ((equal key 333) (rota-figura f 0 5 0) (cls f) (pinta-figura f) (anima-rotacio f))
-        ((equal key 328) (rota-figura f 5 0 0) (cls f) (pinta-figura f) (anima-rotacio f))
-        ((equal key 336) (rota-figura f -5 0 0) (cls f) (pinta-figura f) (anima-rotacio f)) 
+        ((equal key 331) (rota-figura f 0 -5 0) (cls f) (pinta-figura f) (anima-rotacio f)) ;rotacio en eix X (esquerra)
+        ((equal key 333) (rota-figura f 0 5 0) (cls f) (pinta-figura f) (anima-rotacio f)) ;rotacio en eix X (dreta)
+        ((equal key 328) (rota-figura f 5 0 0) (cls f) (pinta-figura f) (anima-rotacio f)) ;rotacio en eix Y (amunt)
+        ((equal key 336) (rota-figura f -5 0 0) (cls f) (pinta-figura f) (anima-rotacio f)) ;rotacio en eix Y (abaix)
+        ((equal key 119) (rota-figura f 0 0 5) (cls f) (pinta-figura f) (anima-rotacio f)) ;rotacio en eix Z (w)
+        ((equal key 115) (rota-figura f 0 0 -5) (cls f) (pinta-figura f) (anima-rotacio f)) ;rotacio en eix Z (s)
         ((equal key 113) (animacio f)) 
         (T (anima-rotacio f))
     )
