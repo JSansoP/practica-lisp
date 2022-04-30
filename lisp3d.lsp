@@ -4,7 +4,7 @@
     (putprop 'cub '((1 2 3 4) (5 6 7 8) (4 8 9 12) (1 5 9 10) (2 6 10 11) (11 12 3 7)) 'cares)
 
     (putprop 'octaedre '((0 -1 0) (-0.5 0 0.5) (-0.5 0 -0.5) (0.5 0 -0.5) (0.5 0 0.5) (0 1 0)) 'punts)
-    (putprop 'octaedre '((1 2) (1 3) (1 4) (1 5) (2 3) (2 4) (4 5) (2 5) (2 6) (3 6) (4 6) (5 6)) 'arestes)
+    (putprop 'octaedre '((1 2) (1 3) (1 4) (1 5) (2 3) (2 5) (4 5) (4 3) (2 6) (3 6) (4 6) (5 6)) 'arestes)
     (putprop 'octaedre '((1 4 8) (1 2 5) (2 3 6) (3 4 7) (8 9 12) (5 9 10) (6 10 11) (7 11 12)) 'cares)    ;inicialitzam figures
     
     (putprop 'prisma '((0 -1 0) (0 -1 -1) (1 -1 0) (0 1 0) (0 1 -1) (1 1 0)) 'punts)
@@ -167,6 +167,7 @@
     (t (+ (* (car v1) (car v2)) (pescalar (cdr v1) (cdr v2))))) 
 )
 
+
 (defun escala(x l)
     (cond   ((null l) nil)
             (t (cons (* x (car l)) (escala x (cdr l))))
@@ -179,26 +180,31 @@
         (cons (car (car matrix)) (cars (cdr matrix))))
         )
 
+
 (defun cdrs (matrix)
     (if (null matrix)
         nil
         (cons (cdr (car matrix)) (cdrs (cdr matrix))))
         )
 
+;Funció que retorna la transposada d'una matriu
 (defun transpose (matrix)
     (cond ((null matrix) nil)
         ((null (car matrix)) nil)
         (t (cons (cars matrix) (transpose (cdrs matrix))))))
 
+;Funció que anima una figura
 (defun animacio (f)
+    (print 'animacio)
     (setq key (get-key))
     (cond ((equal key 114) (anima-rotacio f))
         ((equal key 116) (anima-translacio f))
         ((equal key 101) (anima-escalat f))
         ((equal key 113) (pinta-figura f))
-        ((t (anima-rotacio f)))
+        (T (anima-rotacio f))
     )
 )
+;Funció que anima la rotació d'una figura depenent de l'input de l'usuari
 (defun anima-rotacio (f)
     (print 'rotacio)
     (setq key (get-key))
@@ -208,10 +214,11 @@
         ((equal key 328) (rota-figura f 5 0 0) (cls f) (pinta-figura f) (anima-rotacio f))
         ((equal key 336) (rota-figura f -5 0 0) (cls f) (pinta-figura f) (anima-rotacio f)) 
         ((equal key 113) (animacio f)) 
-        ((t (anima-rotacio f)))
+        (T (anima-rotacio f))
     )
 )
 
+;Funció que anima la translació d'una figura depenent de l'input de l'usuari
 (defun anima-translacio (f)
     (print 'translacio)
     (setq key (get-key))
@@ -221,10 +228,11 @@
         ((equal key 328) (trasllada-figura f 0 5 0) (cls f) (pinta-figura f) (anima-translacio f))
         ((equal key 336) (trasllada-figura f 0 -5 0 ) (cls f) (pinta-figura f) (anima-translacio f)) 
         ((equal key 113) (animacio f)) 
-        ((t  (anima-translacio f)))
+        (T  (anima-translacio f))
     )
 )
 
+;Funció que anima l'escalat d'una figura depenent de l'input de l'usuari
 (defun anima-escalat (f)
     (print 'escalat)
     (setq key (get-key))
@@ -232,7 +240,7 @@
         ((equal key 331) (escala-figura f 2 2 2) (cls f) (pinta-figura f) (anima-escalat f))
         ((equal key 333) (escala-figura f 0.5 0.5 0.5) (cls f) (pinta-figura f) (anima-escalat f))
         ((equal key 113) (animacio f)) 
-        ((t (anima-escalat f)))
+        (T (anima-escalat f))
     )
 )
 
