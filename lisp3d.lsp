@@ -35,7 +35,7 @@
     (putprop 'piramide '((1 2) (1 3) (1 4) (1 5) (2 3) (2 5) (4 5) (4 3)) 'arestes)
     (putprop 'piramide '((1 4 8) (1 2 5) (2 3 6) (3 4 7) (2 3 4 5)) 'cares)    ;inicialitzam figures
 
-    (putprop 'diamant '((0 0 0) (1 1 0) (0.5 1 0.86602) (-0.5 1 0.86602) (-1 1 0) (-0.5 1 -0.86602) (0.5 1 -0.86602) (0.75 1.25 0) (0.375 1.25 0.649519) (-0.375 1.25 0.649519) (-0.75 1.25 0) (-0.375 1.25 -0.649519) (0.375 1.25 -0.649519)(anima-rotacio f) ) 'punts)
+    (putprop 'diamant '((0 -0.5 0) (1 0.5 0) (0.5 0.5 0.86602) (-0.5 0.5 0.86602) (-1 0.5 0) (-0.5 0.5 -0.86602) (0.5 0.5 -0.86602) (0.75 0.75 0) (0.375 0.75 0.649519) (-0.375 0.75 0.649519) (-0.75 0.75 0) (-0.375 0.75 -0.649519) (0.375 0.75 -0.649519)) 'punts)
     (putprop 'diamant '((1 2) (1 3) (1 4) (1 5) (1 6) (1 7) (2 3) (3 4) (4 5) (5 6) (6 7) (7 2) (2 8) (3 9) (4 10) (5 11) (6 12) (7 13) (8 9) (9 10) (10 11) (11 12) (12 13) (13 8)) 'arestes)
     (putprop 'diamant '((1 2 7) (2 3 8) (3 4 9) (4 5 10) (5 6 11) (1 6 12) (13 7 14 19) (14 20 15 8) (9 15 16 21) (10 16 17 22) (11 17 18 23)  (13 18 12 24) (19 20 21 22 23 24)) 'cares)    ;inicialitzam figures
 
@@ -88,6 +88,7 @@
 
 (defun trasllada-figura(f x y z)
     (putprop f (multMatrix (get f 'matriu) (translacio x y z)) 'matriu)
+    
 )
 
 (defun rota-figura(f x y z)
@@ -237,6 +238,10 @@
 ;Funció que anima la rotació d'una figura depenent de l'input de l'usuari
 (defun anima-rotacio (f)
     (print 'rotacio)
+    ;Print the points of the figure
+    (print (car (get f 'punts)))
+    
+    ;(putprop f (+ 0.5 (cadar (get f 'punts)) 'punts))
     (setq key (get-key))
     (cond 
         ((equal key 331) (rota-figura f 0 -5 0) (cls f) (pinta-figura f) (anima-rotacio f)) ;rotacio en eix X (esquerra)
@@ -245,6 +250,14 @@
         ((equal key 336) (rota-figura f -5 0 0) (cls f) (pinta-figura f) (anima-rotacio f)) ;rotacio en eix Y (abaix)
         ((equal key 119) (rota-figura f 0 0 5) (cls f) (pinta-figura f) (anima-rotacio f)) ;rotacio en eix Z (w)
         ((equal key 115) (rota-figura f 0 0 -5) (cls f) (pinta-figura f) (anima-rotacio f)) ;rotacio en eix Z (s)
+        ((equal key 43) (putprop f (+ 0.5 (cadar (get f 'punts)) 'punts)) (cls f) (pinta-figura f) (anima-rotacio f))
+        ((equal key 45) (putprop f (- 0.5 (cadar (get f 'punts)) 'punts)) (cls f) (pinta-figura f) (anima-rotacio f))
+
+
+        ((equal key 100) (print 100) (anima-rotacio f)) 
+
+        ;Change first point from figure
+
         ((equal key 113) (animacio f)) 
         (T (anima-rotacio f))
     )
