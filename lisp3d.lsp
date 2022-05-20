@@ -87,15 +87,15 @@
 )
 
 (defun trasllada-figura(f x y z)
-    (putprop f (multMatrix (get f 'matriu) (translacio x y z)) 'matriu)
+    (putprop f (mult (get f 'matriu) (translacio x y z)) 'matriu)
 )
 
 (defun rota-figura(f x y z)
-    (putprop f (multMatrix (multMatrix (multMatrix (get f 'matriu) (rotax x)) (rotay y)) (rotaz z)) 'matriu)
+    (putprop f (mult (mult (mult (get f 'matriu) (rotax x)) (rotay y)) (rotaz z)) 'matriu)
 )
 
 (defun escala-figura (f x y z)
-    (putprop f (multMatrix (get f 'matriu) (escalat x y z)) 'matriu)
+    (putprop f (mult (get f 'matriu) (escalat x y z)) 'matriu)
 )
 
 (defun inicia-figura(f)
@@ -117,13 +117,15 @@
             (t (pinta-aresta (agafa (car cara) (get (get f 'patro) 'arestes)) f) (pinta-arestes (cdr cara) f))
     )
 )
-
+;; Para multiplicar el punto por la matriz de transformacion, como hemos implementado el mutlVecMatrix para
+;; que la matriz de entrada estuvise transpuesta (para mayor facilidad al multiplicar matriz por matriz), tambien tenemos
+;; que transponer la matriz para que el resultado de la multiplicacion sea correcto.
 (defun pinta-aresta (aresta f)
-   (move (+ 320 (realpart (round (car (multVecMatrix (snoc 1 (agafa (car aresta) (get (get f 'patro) 'punts))) (get f 'matriu))))))
-        (+ 187 (realpart (round (cadr (multVecMatrix (snoc 1 (agafa (car aresta) (get (get f 'patro) 'punts))) (get f 'matriu)))))))
+   (move (+ 320 (realpart (round (car (multVecMatrix (snoc 1 (agafa (car aresta) (get (get f 'patro) 'punts))) (transpose (get f 'matriu)))))))
+        (+ 187 (realpart (round (cadr (multVecMatrix (snoc 1 (agafa (car aresta) (get (get f 'patro) 'punts))) (transpose (get f 'matriu))))))))
         
-    (draw (+ 320 (realpart (round (car (multVecMatrix (snoc 1 (agafa (cadr aresta) (get (get f 'patro) 'punts))) (get f 'matriu))))))
-            (+ 187 (realpart (round (cadr (multVecMatrix (snoc 1 (agafa (cadr aresta) (get (get f 'patro) 'punts))) (get f 'matriu))))))
+    (draw (+ 320 (realpart (round (car (multVecMatrix (snoc 1 (agafa (cadr aresta) (get (get f 'patro) 'punts))) (transpose (get f 'matriu)))))))
+            (+ 187 (realpart (round (cadr (multVecMatrix (snoc 1 (agafa (cadr aresta) (get (get f 'patro) 'punts))) (transpose (get f 'matriu)))))))
     )
 )
 
