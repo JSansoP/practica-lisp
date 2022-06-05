@@ -1,19 +1,19 @@
-;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-;           Práctica 1 -  Llenguatges de Programació (2721)                   %
-;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+;===============================================================================
+;           Práctica 1 -  Llenguatges de Programació (2721)                    =
+;===============================================================================
 
-                        ;%%%%%%%% ALUMNES %%%%%%%%%
+                        ;======== ALUMNES ========;
                         ;   Joan Sansó Pericàs    ;
                         ;   Joan Vilella Candia   ;
                         ;   Julián Wallis Medina  ;
-                        ;%%%%%%%%%%%%%%%%%%%%%%%%%%
+                        ;==========================
 
-                        ;%%%%%% PROFESSORS %%%%%%%%
+                        ;====== PROFESSORS =======;
                         ;   Dr. Ramon Mas Sansó   ;
                         ;   Dra. Xisca Roig Maimó ;
-                        ;%%%%%%%%%%%%%%%%%%%%%%%%%%
+                        ;=========================;
 
-;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+;===============================================================================
 ; Hem duit a terme la primera pràctica de l'assignatura, que consisteix en
 ; programar un entorn de dibuix de figures 3D.
 
@@ -24,10 +24,18 @@
 ; A la funció de animar la rotació hem afegit una rotació sobre l'eix z a més
 ; de les demanades per la pràctica, per rotar sobre l'eix z, s'empreran les
 ; tecles W i S.
-;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+;===============================================================================
 
 
-;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+;===============================================================================
+;======================     FUNCIONS PRINCIPALS     ============================
+;===============================================================================
+
+
+;===============================================================================
+; Funció que s'encarrega de definir els átoms de les figures a través dels punts,
+; arestes i cares.
 (defun inicia-patrons()
     (putprop 'cub '((-0.5 -0.5 0.5) (-0.5 -0.5 -0.5) (0.5 -0.5 -0.5) (0.5 -0.5 0.5) (-0.5 0.5 0.5) (-0.5 0.5 -0.5) (0.5 0.5 -0.5) (0.5 0.5 0.5)) 'punts)
     (putprop 'cub '((1 2) (2 3) (3 4) (1 4) (5 6) (6 7) (7 8) (5 8) (1 5) (2 6) (3 7) (4 8)) 'arestes)
@@ -57,7 +65,9 @@
     (putprop 'vars 1 'comptador)
 )
 
-;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+;===============================================================================
+; Funció que donat el nom, el patró i el color d'una figura crea una de nova
+; dins l'àtom escena.
 (defun crea-figura(nom patro color)
     (putprop nom patro 'patro)
     (putprop nom color 'color)
@@ -65,73 +75,39 @@
     (putprop 'escena (cons nom (get 'escena 'figura)) 'figura)
 )
 
-;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-;sera una copia de pintar-figura pero con color = background color
-(defun cls-figura (f)
-    (color 0 0 0)
-    (pinta-cares (get (get f 'patro) 'cares) f)
-)
-
-;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+;===============================================================================
+; S'encarrega de pintar la figura. Deixa el color de la figura llest i crida a
+; pinta-cares amb la llista de cares del patró de la figura.
 (defun pinta-figura(f)
     (eval (cons 'color (get f 'color)))
     (pinta-cares (get (get f 'patro) 'cares) f)
     (color 0 0 0)
 )
 
-;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-(defun translacio(dx dy dz)
-    (list (list 1 0 0 0) (list 0 1 0 0) (list 0 0 1 0) (list dx dy dz 1))
+;===============================================================================
+; Fa el mateix que pinta figura però amb el color del fons enlloc del color de
+; la figura.
+(defun cls-figura (f)
+    (color 0 0 0)
+    (pinta-cares (get (get f 'patro) 'cares) f)
 )
 
-;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-(defun escalat(ex ey ez)
-    (list (list ex 0 0 0) (list 0 ey 0 0) (list 0 0 ez 0) (list 0 0 0 1))
+;===============================================================================
+; S'encarrega de esborrar la figura de la pantalla i de l'escena.
+(defun borra-figura (f)
+    (cls-figura f)
+    (putprop 'escena (borra-element f (get 'escena 'figura)) 'figura)
 )
 
-;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-(defun rotax(a)
-    (list (list 1 0 0 0) (list 0 (cos (radians a)) (- 0 (sin (radians a))) 0)
-     (list 0 (sin (radians a)) (cos (radians a)) 0) (list 0 0 0 1))
-)
-
-;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-(defun rotay(a)
-    (list (list (cos (radians a)) 0 (- 0 (sin (radians a))) 0) (list 0 1 0 0)
-     (list (sin (radians a)) 0 (cos (radians a)) 0) (list 0 0 0 1))
-)
-
-;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-(defun rotaz(a)
-    (list (list (cos (radians a)) (- 0 (sin (radians a))) 0 0)
-     (list (sin (radians a)) (cos (radians a)) 0 0) (list 0 0 1 0) (list 0 0 0 1))
-)
-
-;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-(defun trasllada-figura(f x y z)
-    (putprop f (mult (get f 'matriu) (translacio x y z)) 'matriu)
-)
-
-;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-(defun rota-figura(f x y z)
-    (putprop f (mult (mult (mult (get f 'matriu) (rotax x)) (rotay y)) (rotaz z)) 'matriu)
-)
-
-;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-(defun escala-figura (f x y z)
-    (putprop f (mult (get f 'matriu) (escalat x y z)) 'matriu)
-)
-
-;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+;===============================================================================
+; Inicia la matriu identitat de la figura.
 (defun inicia-figura(f)
     (putprop f (identitat) 'matriu)
 )
-;convert from degrees to radians
-(defun radians(a)
-    (* a (/ pi 180))
-)
 
-;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+;===============================================================================
+; Per a cada cara de la llista de cares, crida a pinta-arestes amb la llista
+; d'arestes d'aquesta cara.
 (defun pinta-cares(cares f)
     (cond
         ((null cares) nil)
@@ -139,7 +115,10 @@
     )
 )
 
-;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+;===============================================================================
+; Per a cada aresta de la llista d'arestes, crida a pinta-aresta amb la llista de
+; punts de l'aresta (la llista realment conté els índexos dels punts que formen
+; l'aresta de la llista de punts de la figura).
 (defun pinta-arestes(cara f)
     (cond
         ((null cara) nil)
@@ -147,12 +126,14 @@
     )
 )
 
-;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-;; Para multiplicar el punto por la matriz de transformacion, como hemos
-;; implementado el mutlVecMatrix para que la matriz de entrada estuvise
-;; transpuesta (para mayor facilidad al multiplicar matriz por matriz), tambien
-;; tenemos que transponer la matriz para que el resultado de la multiplicacion
-;; sea correcto.
+;===============================================================================
+; Ens passen una llista d'índexos de punts de la figura, i per a cada punt
+; calculam la seva posició multiplicant la coordenada per a la matriu de
+; transformació de la figura.
+; Com que varem implementar multVecMatrix per a que la matriu d'entrada estigués
+; transposada (per més facilitat alhora de multiplicar matriu per matriu), també
+; hem de transposar la matriu perque el resultat de la multiplicació sigui
+; correcte.
 (defun pinta-aresta (aresta f)
    (move (+ 320 (realpart (round (car (multVecMatrix (snoc 1 (agafa (car aresta) (get (get f 'patro) 'punts))) (transpose (get f 'matriu)))))))
         (+ 187 (realpart (round (cadr (multVecMatrix (snoc 1 (agafa (car aresta) (get (get f 'patro) 'punts))) (transpose (get f 'matriu))))))))
@@ -162,20 +143,15 @@
     )
 )
 
-;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-(defun borra-figura (f)
-    (cls-figura f)
-    (putprop 'escena (borra-element f (get 'escena 'figura)) 'figura)
-)
-
-;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-;defun paint each element of a list
+;===============================================================================
+; Pinta totes les figures de l'escena.
 (defun pinta-figures ()
     (cls)
     (pinta-figures-recursive (get 'escena 'figura))
 )
 
-;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+;===============================================================================
+; Pinta les figures de la llista passada recursivament.
 (defun pinta-figures-recursive (l)
     (cond
         ((null l) nil)
@@ -184,14 +160,15 @@
     )
 )
 
-;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+;===============================================================================
+; Borra la pantalla i la llista de figures de l'escena.
 (defun borra-figures()
     (cls)
     (putprop 'escena nil 'figura)
 )
 
-;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-;remove element from list
+;===============================================================================
+;
 (defun borra-element(x l)
     (cond
         ((null l) nil)
@@ -200,22 +177,14 @@
     )
 )
 
-;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-;create 4x4 identity matrix
+;===============================================================================
+; Crea una matriu identitat 4x4
 (defun identitat()
     '((1 0 0 0) (0 1 0 0) (0 0 1 0) (0 0 0 1))
 )
 
-;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-(defun snoc(x l)
-    (cond
-        ((null l) (cons x l))
-        (t (cons (car l) (snoc x (cdr l))))
-    )
-)
-
-;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-; coge el enesimo elemento de la lista
+;===============================================================================
+; Agafa l'element de la llista amb l'índex indicat
 (defun agafa (n list)
     (cond
         ((null list) nil)
@@ -224,12 +193,13 @@
     )
 )
 
-;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+;===============================================================================
+; Multiplica la matriu m1 per la matriu transposada m2.
 (defun mult(m1 m2)
     (multMatrix m1 (transpose m2))
 )
 
-;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+;===============================================================================
 (defun multMatrix(m1 m2)
     (cond
         ((null m1) nil)
@@ -237,7 +207,7 @@
     )
 )
 
-;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+;===============================================================================
 (defun multVecMatrix(v m)
     (cond
         ((null m) nil)
@@ -245,7 +215,7 @@
     )
 )
 
-;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+;===============================================================================
 ;scalar product of two vectors
 (defun pescalar (v1 v2)
     (cond
@@ -254,7 +224,7 @@
     )
 )
 
-;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+;===============================================================================
 (defun escala(x l)
     (cond
         ((null l) nil)
@@ -262,23 +232,50 @@
     )
 )
 
-;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-(defun cars (matrix)
-    (cond
-        ((null matrix) nil)
-        (t (cons (car (car matrix)) (cars (cdr matrix))))
-    )
+;===============================================================================
+(defun translacio(dx dy dz)
+    (list (list 1 0 0 0) (list 0 1 0 0) (list 0 0 1 0) (list dx dy dz 1))
 )
 
-;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-(defun cdrs (matrix)
-    (cond
-        ((null matrix) nil)
-        (cons (cdr (car matrix)) (cdrs (cdr matrix)))
-    )
+;===============================================================================
+(defun escalat(ex ey ez)
+    (list (list ex 0 0 0) (list 0 ey 0 0) (list 0 0 ez 0) (list 0 0 0 1))
 )
 
-;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+;===============================================================================
+(defun rotax(a)
+    (list (list 1 0 0 0) (list 0 (cos (radians a)) (- 0 (sin (radians a))) 0)
+     (list 0 (sin (radians a)) (cos (radians a)) 0) (list 0 0 0 1))
+)
+
+;===============================================================================
+(defun rotay(a)
+    (list (list (cos (radians a)) 0 (- 0 (sin (radians a))) 0) (list 0 1 0 0)
+     (list (sin (radians a)) 0 (cos (radians a)) 0) (list 0 0 0 1))
+)
+
+;===============================================================================
+(defun rotaz(a)
+    (list (list (cos (radians a)) (- 0 (sin (radians a))) 0 0)
+     (list (sin (radians a)) (cos (radians a)) 0 0) (list 0 0 1 0) (list 0 0 0 1))
+)
+
+;===============================================================================
+(defun trasllada-figura(f x y z)
+    (putprop f (mult (get f 'matriu) (translacio x y z)) 'matriu)
+)
+
+;===============================================================================
+(defun rota-figura(f x y z)
+    (putprop f (mult (mult (mult (get f 'matriu) (rotax x)) (rotay y)) (rotaz z)) 'matriu)
+)
+
+;===============================================================================
+(defun escala-figura (f x y z)
+    (putprop f (mult (get f 'matriu) (escalat x y z)) 'matriu)
+)
+
+;===============================================================================
 ;Funció que retorna la transposada d'una matriu
 (defun transpose (matrix)
     (cond
@@ -288,7 +285,7 @@
     )
 )
 
-;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+;===============================================================================
 ;Funció que anima una figura
 (defun animacio (f)
     (print 'animacio)
@@ -302,7 +299,7 @@
     )
 )
 
-;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+;===============================================================================
 ;Funció que anima la rotació d'una figura depenent de l'input de l'usuari
 (defun anima-rotacio (f)
     (print 'rotacio)
@@ -319,7 +316,7 @@
     )
 )
 
-;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+;===============================================================================
 ;Funció que anima la translació d'una figura depenent de l'input de l'usuari
 (defun anima-translacio (f)
     (print 'translacio)
@@ -334,7 +331,7 @@
     )
 )
 
-;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+;===============================================================================
 ;Funció que anima l'escalat d'una figura depenent de l'input de l'usuari
 (defun anima-escalat (f)
     (print 'escalat)
@@ -344,6 +341,46 @@
         ((equal key 333) (escala-figura f 0.5 0.5 0.5) (cls f) (pinta-figura f) (anima-escalat f))
         ((equal key 113) (animacio f))
         (t (anima-escalat f))
+    )
+)
+
+;===============================================================================
+;======================     FUNCIONS AUXILIARS      ============================
+;===============================================================================
+
+
+;===============================================================================
+;convert from degrees to radians
+(defun radians(a)
+    (* a (/ pi 180))
+)
+
+;===============================================================================
+; Donada una llista de llistes (matriu), retorna una llista amb el primer
+; element de cada subllista
+(defun cars (matrix)
+    (cond
+        ((null matrix) nil)
+        (t (cons (car (car matrix)) (cars (cdr matrix))))
+    )
+)
+
+;===============================================================================
+; Donada una llista de llistes (matriu), retorna una llista de llistes on cada
+; subllista conté tots els elements menys el primer.
+(defun cdrs (matrix)
+    (cond
+        ((null matrix) nil)
+        (cons (cdr (car matrix)) (cdrs (cdr matrix)))
+    )
+)
+
+;===============================================================================
+; Fa el cons al reves (Fica un element al final de la llista)
+(defun snoc(x l)
+    (cond
+        ((null l) (cons x l))
+        (t (cons (car l) (snoc x (cdr l))))
     )
 )
 
